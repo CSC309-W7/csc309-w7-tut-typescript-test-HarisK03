@@ -7,7 +7,23 @@ export const apiResponse: unknown = [
 ];
 
 export function getUsersData(): User[] {
-	return apiResponse as User[]; // intentionally unsafe
+	if (!Array.isArray(apiResponse)) {
+		return [];
+	}
+
+	return apiResponse.map((u) => {
+		if (typeof u !== "object" || u === null)
+			return {
+				name: "",
+				age: 0,
+			};
+
+		const name = "name" in u && typeof u.name === "string" ? u.name : "";
+		const rawAge = "age" in u ? u.age : 0;
+		const age = typeof rawAge === "number" ? rawAge : Number(rawAge) || 0;
+
+		return { name, age };
+	});
 }
 
 export function formatAges(users: User[]): string[] {
